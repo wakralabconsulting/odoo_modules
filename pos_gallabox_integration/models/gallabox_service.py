@@ -9,6 +9,24 @@ class GallaboxService(models.Model):
     _description = 'Gallabox WhatsApp Service'
 
     @api.model
+    def get_custom_receipt_xml(self, receipt_name='gallabox_pos_receipt'):
+        """
+        Bridge method to fetch dynamic XML from the custom_receipts_for_pos module.
+        Searches for a record in 'pos.receipt.design' by name.
+        """
+        # We search the design table for the specific template name you created
+        receipt_design = self.env['pos.receipt.design'].sudo().search([
+            ('name', '=', receipt_name)
+        ], limit=1)
+        
+        if receipt_design:
+            _logger.info("Gallabox: Found custom receipt design: %s", receipt_name)
+            return receipt_design.receipt_xml
+        
+        _logger.warning("Gallabox: Custom receipt design '%s' not found.", receipt_name)
+        return False
+
+    @api.model
     def send_whatsapp_template(self, recipient_name, recipient_phone, template_name, body_values, pdf_url=None, pdf_name="Receipt"):
         params = self.env['ir.config_parameter'].sudo()
         api_key = params.get_param('pos_gallabox.api_key')
@@ -38,7 +56,7 @@ class GallaboxService(models.Model):
             'apiKey': api_key,
             'apiSecret': api_secret,
             'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'  # This is the magic line
+            'ngrok-skip-browser-warning': 'true'  # Preserved NGROK bypass
         }
         
         try:
