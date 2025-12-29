@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_receipt_template_view">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page" style="width: 80mm; margin: 0 auto; font-family: 'Arial', sans-serif; color: #000; background-color: white; padding: 5px;">
+                    
+                    <div style="font-size:13px; text-align:center;">
+                        <t t-if="o.company_id.logo">
+                            <img t-att-src="image_data_uri(o.company_id.logo)" style="width: 70%; padding:10px; margin-top: 10px;" alt="Logo"/>
+                        </t>
+                    </div>
+
+                    <div style="border-bottom:1pt dashed black; text-align:center; font-size:10pt; font-weight:bold; width:100%;">
+                        <div style="width: 100%; font-weight:900; padding-bottom: 5pt; padding-top:5pt; font-size:18pt; border:none; margin-top:5px;">
+                             # <t t-esc="o.session_id.sudo().receipt_sequence or o.name"/>
+                        </div>
+                    </div>
+
+                    <table style="border-bottom:1pt dashed black; margin-top:5pt; padding:1pt; font-size:9pt; font-weight:bold; width:100%;">
+                        <colgroup>
+                            <col width='24%'/><col width='1%'/><col width='46%'/><col width='1%'/><col width='24%'/>
+                        </colgroup>
+                        <tr>
+                            <td>Order ID</td><td>:</td>
+                            <td style="text-align:right;"><t t-esc="o.pos_reference or o.name"/></td>
+                            <td>:</td><td style="text-align:right;">العدد</td>
+                        </tr>
+                        <tr>
+                            <td>Date</td><td>:</td>
+                            <td style="text-align:right;"><t t-esc="o.date_order.strftime('%d/%m/%Y %H:%M')"/></td>
+                            <td>:</td><td style="text-align:right;">التاريخ</td>
+                        </tr>
+                        <tr>
+                            <td>Cashier</td><td>:</td>
+                            <td style="text-align:right;"><t t-esc="o.user_id.name"/></td>
+                            <td>:</td><td style="text-align:right;">البائع</td>
+                        </tr>
+                        <tr t-if="o.partner_id">
+                            <td>Customer</td><td>:</td>
+                            <td style="text-align:right;"><t t-esc="o.partner_id.name"/></td>
+                            <td>:</td><td style="text-align:right;">الحريف</td>
+                        </tr>
+                    </table>
+
+                    <table style="width:100%; border-bottom:1pt dashed black; font-size:10pt; font-weight:bold; margin-top:5px;">
+                        <colgroup><col width='25%'/><col width='15%'/><col width='60%'/></colgroup>
+                        <tr>
+                            <th style="border-bottom:1pt dashed black; text-align:left;">Amount<br/>مبلغ</th>
+                            <th style="border-bottom:1pt dashed black; text-align:center;">Qty<br/>الكمية</th>
+                            <th style="border-bottom:1pt dashed black; text-align:right;">Product<br/>إسم المنتوج</th>
+                        </tr>
+                        <t t-foreach="o.lines" t-as="line">
+                            <tr>
+                                <td style="padding-top:5pt; vertical-align:top; text-align:left;">
+                                    <t t-esc="line.price_subtotal_incl" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td style="text-align:center; padding-top:5pt; vertical-align:top;">
+                                    <t t-esc="line.qty"/>
+                                </td>
+                                <td style="text-align:right; padding-top:5pt; vertical-align:top;">
+                                    <t t-esc="line.product_id.name"/>
+                                    <t t-if="line.customer_note"><br/><small><t t-esc="line.customer_note"/></small></t>
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+
+                    <table style="width:100%; border-bottom:1pt dashed black; font-size:11pt; font-weight:bold; margin-top:5px;">
+                        <tr>
+                            <td>Net to pay</td><td>:</td>
+                            <td style="text-align:center;"><t t-esc="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
+                            <td>:</td><td style="text-align:right;">الصافي</td>
+                        </tr>
+                    </table>
+
+                    <table style="width:100%; font-size:10pt; margin-top:5px;">
+                        <t t-foreach="o.payment_ids" t-as="pay">
+                            <tr>
+                                <td><t t-esc="pay.payment_method_id.name"/></td><td>:</td>
+                                <td style="text-align:center;"><t t-esc="pay.amount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
+                                <td>:</td><td style="text-align:right;">المدفوع</td>
+                            </tr>
+                        </t>
+                        <t t-set="change" t-value="sum(o.payment_ids.mapped('amount')) - o.amount_total"/>
+                        <tr t-if="change &gt; 0">
+                            <td style="font-weight:bold;">Change</td><td>:</td>
+                            <td style="text-align:center; font-weight:bold;"><t t-esc="change" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
+                            <td>:</td><td style="text-align:right; font-weight:bold;">الباقي</td>
+                        </tr>
+                    </table>
+
+                    <div style="text-align:center; font-size:11px; margin-top:10px;">
+                        <b>You’ve got good taste. See you next time!<br/>Shop at: www.torba.co</b>
+                    </div>
+
+                    <div style="font-size:9px; margin-top:10px; text-align:left; border-top:1px solid black; padding-top:5px;">
+                        Food items are non-refundable. Keep bill for exchange.<br/>
+                        Returns accepted within 7 days.
+                    </div>
+                    <div style="font-size:9px; text-align:right; direction:rtl;">
+                        لا يجوز استرداد ثمن المواد الغذائية. يرجى الاحتفاظ بالفاتورة.<br/>
+                        يتم قبول الإرجاع خلال 7 أيام.
+                    </div>
+
+                    <div style="text-align:center; margin-top:20px; font-weight:bold;">
+                        *** Customer Copy ***
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
