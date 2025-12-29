@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_plastic_free_form" model="ir.ui.view">
+		<field name="name">plastic.free.form</field>
+		<field name="model">plastic.free</field>
+		<field name="arch" type="xml">
+			<form string="Point of Sale Orders" create="0">
+				<header>
+					<button name="button_verify" string="Verified" type="object" invisible="state != 'collected'"/>
+					<button name="button_wash" string="Wash" type="object" invisible="state != 'verify'"/>
+					<button name="button_inventory" string="Inventory" type="object" invisible="state != 'wash'"/>
+					<field name="state" widget="statusbar" statusbar_visible="collected,verify,wash,inventory" />
+
+				</header>
+				<sheet>
+
+					<group col="4" colspan="4" name="order_fields">
+						<field name="name"/>
+						<field name="date_order"/>
+						<field name="session_id" />
+						<field name="stock_picking_id" />
+						<field string="User" name="user_id" readonly="state in ['done', 'invoiced']"/>
+						<field name="partner_id" context="{'res_partner_search_mode': 'customer'}" readonly="state == 'invoiced'"/>
+					</group>
+					<group string="Product details">
+						<field name="full_product_name"/>
+						<field name="qty"/>
+						<field name="price_unit" widget="monetary"/>
+						<field name="discount" string="Disc.%"/>
+						<field name="price_subtotal" widget="monetary" force_save="1"/>
+						<field name="price_subtotal_incl" widget="monetary" force_save="1"/>
+
+					</group>
+					<!--					<notebook colspan="4">-->
+					<!--                    <page string="Products" name="products">-->
+					<!--                        <field name="line_ids" colspan="4" nolabel="1" >-->
+					<!--                            <tree string="Order lines" editable="bottom">-->
+					<!--                                <field name="full_product_name"/>-->
+					<!--                                <field name="qty"/>-->
+					<!--                                <field name="price_unit" widget="monetary"/>-->
+					<!--                                <field name="discount" string="Disc.%"/>-->
+					<!--                                <field name="price_subtotal" widget="monetary" force_save="1"/>-->
+					<!--                                <field name="price_subtotal_incl" widget="monetary" force_save="1"/>-->
+					<!--                            </tree>-->
+					<!--                        </field>-->
+					<!--                    </page>-->
+					<!--					</notebook>-->
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+
+	<record id="action_plastic_free_form" model="ir.actions.act_window">
+		<field name="name">Empty Bottle Orders</field>
+		<field name="res_model">plastic.free</field>
+		<field name="view_mode">tree,form</field>
+		<field name="view_id" eval="False"/>
+		<field name="domain">[]</field>
+		<field name="help" type="html">
+			<p class="o_view_nocontent_empty_folder">
+				No orders found
+			</p><p>
+			To record new orders, start a new session.
+		</p>
+		</field>
+	</record>
+
+
+	<record id="view_plastic_free_tree" model="ir.ui.view">
+		<field name="name">plastic.free.tree</field>
+		<field name="model">plastic.free</field>
+		<field name="arch" type="xml">
+			<tree string="POS Orders" create="0" sample="1" decoration-info="state == 'collected'"  duplicate="0">
+				<field name="name" decoration-bf="1"/>
+				<field name="session_id"  readonly="state != 'collected'"/>
+				<field name="date_order"/>
+				<field name="config_id" />
+				<!--				<field name="pos_reference"/>-->
+				<!--				<field name="tracking_number" optional="hide"/>-->
+				<field name="partner_id"/>
+				<field name="product_id"/>
+				<field name="qty"/>
+				<field name="stock_picking_id"/>
+				<field name="state" widget="badge" decoration-info="state == 'collected'" />
+			</tree>
+		</field>
+	</record>
+
+
+	<record id="view_plastic_free_search" model="ir.ui.view">
+		<field name="name">plastic.free.search.view</field>
+		<field name="model">plastic.free</field>
+		<field name="arch" type="xml">
+			<search string="Search Plastic Order">
+				<field name="name"/>
+				<field name="date_order"/>
+				<field name="user_id"/>
+				<field name="partner_id"/>
+				<field name="session_id"/>
+				<field name="top_customer"/>
+				<separator/>
+				<filter string="Order Date" name="order_date" date="date_order"/>
+				<filter string="Market Place Customer" name="top_customer" domain="[('top_customer', '=', True)]"/>
+				<filter string="Non Market Place Customer" name="top_customers" domain="[('top_customer', '!=', True)]"/>
+				<filter string="POS Only Sales" name="pos_sale" domain="['|', ('top_customer', '!=', True), ('partner_id', '=', False)]"/>
+				<group expand="0" string="Group By">
+					<filter string="Session" name="session" domain="[]" context="{'group_by': 'session_id'}"/>
+					<filter string="User" name="user_id" domain="[]" context="{'group_by': 'user_id'}"/>
+					<filter string="Customer" name="customer" domain="[]" context="{'group_by': 'partner_id'}"/>
+					<filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+					<filter string="Order Date" name="order_month" domain="[]" context="{'group_by': 'date_order'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+
+	<menuitem id="menu_point_of_plastic" parent="point_of_sale.menu_point_of_sale" action="action_plastic_free_form" sequence="2"
+	/>
+
+
+
+	<record id="action_wash_approve" model="ir.actions.server">
+		<field name="name">Submit To Washed</field>
+		<field name="model_id" ref="model_plastic_free"/>
+		<field name="state">code</field>
+		<field name="binding_model_id" ref="custom_receipts_for_pos.model_plastic_free"/>
+		<field name="binding_view_types">tree</field>
+		<field name="code">
+			action = records.submit_to_wash()
+		</field>
+	</record>
+
+	<record id="action_verify_approve" model="ir.actions.server">
+		<field name="name">Submit To Verified</field>
+		<field name="model_id" ref="model_plastic_free"/>
+		<field name="state">code</field>
+		<field name="binding_model_id" ref="custom_receipts_for_pos.model_plastic_free"/>
+		<field name="binding_view_types">tree</field>
+		<field name="code">
+			action = records.submit_to_verify()
+		</field>
+	</record>
+
+	<record id="action_inv_approve" model="ir.actions.server">
+		<field name="name">Submit To Inventory</field>
+		<field name="model_id" ref="model_plastic_free"/>
+		<field name="state">code</field>
+		<field name="binding_model_id" ref="custom_receipts_for_pos.model_plastic_free"/>
+		<field name="binding_view_types">tree</field>
+		<field name="code">
+			action = records.submit_to_inventory()
+		</field>
+	</record>
+
+	<record id="product_template_plastic" model="ir.ui.view">
+		<field name="name">product.product.product.form</field>
+		 <field name="model">product.product</field>
+          <field name="inherit_id" ref="product.product_normal_form_view"/>
+          <field name="arch" type="xml">
+			<xpath expr="//field[@name='uom_po_id']" position="after">
+				<field name="alias_id"/>
+			</xpath>
+		</field>
+	</record>
+
+
+</odoo>
+

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Examples for receipt design: which can be used or modified -->
+    <record id="pos_receipt_design2_demo" model="pos.receipt">
+        <field name="name">Torba Receipt</field>
+        <field name="design_receipt"><![CDATA[
+<t t-foreach="[1001, 1002, 1003]" t-as="sheet1" t-key="sheet1">
+        <div class="pos-receipt">
+        <div style="font-size:13px; text-align:center;">
+
+
+            <t t-if="props.pos.config.pos_logo">
+                <img t-att-src="props.a2" style="width: 61%;padding:45px;margin-right: 51px;" alt="Logo"/>
+            </t>
+
+            <t t-if='!props.pos.config.pos_logo'>
+                <img class="pos-receipt-logo" t-att-src='props.data.headerData.company.name' alt="Logo" />
+            </t>
+        </div>
+        <div class="pos-receipt-contact" style="border-bottom:1pt dashed black;text-align:center;font-size:10pt;font-weight:bold;width:270px;">
+
+
+            <div style="width: 137px;font-weight:900;padding-bottom: 18pt;padding-top:1pt;font-size:19pt;border-style: solid;margin-top:5px;margin-left: 75px;height: 41px;margin-top:-18px;">Order# <t t-esc='props.num'/>
+            </div>
+            <br/>
+        </div>
+        <br/>
+
+
+
+
+        <table style="border-bottom:1pt dashed black;margin-top:1pt;padding:1pt;font-size:9pt;font-weight:bold;width:270px;">
+            <colgroup>
+                <col width='24%'/>
+                <col width='1%'/>
+                <col width='46%'/>
+                <col width='1%'/>
+                <col width='24%'/>
+            </colgroup>
+            <tr>
+                <td style="vertical-align:bottom;">
+                    Order ID
+                </td>
+                <td style="vertical-align:bottom;padding-left:1pt">:</td>
+                <td style="text-align:right;vertical-align:bottom;padding-right:1pt;font-size:11px;font-weight:bold">
+                    <t t-esc="props.receipt.name"/>
+                </td>
+                <td style="vertical-align:bottom;padding-right:1pt">:</td>
+                <td style="text-align:right;vertical-align:bottom;text-size:7pt">
+                    العدد
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt">Date</td>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt;padding-left:1pt">:</td>
+                <td style="vertical-align:bottom;text-align:right;padding-top:1pt;padding-bottom:1pt;padding-right:1pt; font-size:11px;font-weight:bold">
+                    <t t-esc="props.receipt.date"/>
+                </td>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt">:</td>
+                <td style="text-align:right;vertical-align:bottom;text-size:7pt;padding-top:1pt;padding-bottom:1pt;padding-right:1pt;">
+                    التاريخ
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt;font-weight:bold;font-size:11px;">Cashier
+                </td>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt;padding-left:1pt">:</td>
+                <td style="text-align:right;vertical-align:bottom;padding-right:1pt;padding-top:1pt;padding-bottom:1pt">
+                    <t t-esc="props.receipt.cashier"/>
+                </td>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt;padding-right:1pt">:</td>
+                <td style="text-align:right;vertical-align:bottom;font-size:11px;padding-top:1pt;padding-bottom:1pt">
+                    البائع
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt;font-weight:bold;font-size:11px;">Customer
+                </td>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt;padding-left:1pt">:</td>
+                <td style="text-align:right;vertical-align:bottom;padding-right:1pt;padding-top:1pt;padding-bottom:1pt">
+                    <t t-esc="props.receipt.client"/>
+                </td>
+                <td style="vertical-align:bottom;padding-top:1pt;padding-bottom:1pt;padding-right:1pt">:</td>
+                <td style="text-align:right;vertical-align:bottom;font-size:11px;padding-top:1pt;padding-bottom:1pt">
+                    الحريف
+                </td>
+            </tr>
+        </table>
+
+
+
+        <table style="width:270px;border-bottom:1pt dashed black; font-size:10pt;font-weight:bold" width='100%'
+               class='orderlines'>
+            <colgroup>
+                <col width='20%'/>
+                <col width='20%'/>
+                <col width='60%'/>
+            </colgroup>
+            <tr>
+                <th style="border-bottom:1pt dashed black;vertical-align:bottom; margin-bottom:1pt;padding-bottom:1pt;">
+                    مبلغ<br/>Amount
+                </th>
+                <th style="border-bottom:1pt dashed black;vertical-align:bottom;text-align:right;margin-bottom:1pt;padding-bottom:1pt">
+                    الكمية<br/>Qty
+                </th>
+                <th style="border-bottom:1pt dashed black;vertical-align:bottom;text-align:right;margin-bottom:1pt;padding-bottom:1pt">
+                    إسم المنتوج<br/>Product Name
+                </th>
+            </tr>
+            <t t-if="props.orderlines and props.orderlines.length">
+        <t t-set="data1" t-value="1"/>
+
+<t t-foreach="props.orderlines" t-as="line" t-key="data1">
+                <tr  style="margin-top:2pt">
+                    <td style="padding-bottom:1pt;padding-top:1pt;vertical-align:top">
+                        <t t-esc='line.unitPrice'/>
+                    </td>
+                    <td style="padding-bottom:1pt;padding-top:1pt;vertical-align:top;text-align: end;" class="pos-right-align">
+                        <t t-esc="line.qty"/>
+                    </td>
+                    <td style="text-align:right;padding-bottom:1pt;padding-top:1pt;vertical-align:top">
+                        <t t-esc='line.product_name_wrapped'/>
+                        <t t-esc="line.productName"/>
+                        <t t-if="line.product_name_arabic">
+                            <br/>
+                            <t t-esc="line.product_name_arabic"/>
+                        </t>
+
+                        <t t-if='line.discount !== 0'>
+                            <div class="pos-receipt-left-padding">
+                                Discount:<t t-esc='line.discount'/>%
+                            </div>
+                        </t>
+                        <div t-if="line.note">
+                            <div class="pos-disc-font">
+                                <t t-esc="line.note"/>
+                                <i class="fa fa-tag"/>
+                            </div>
+                        </div>
+                    </td>
+                     <t t-set="data1" t-value="data1+1"/>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                 <li t-if="line.customerNote" class="customer-note w-100 p-2 my-1 rounded text-break">
+                     <div style="float: inline-end;">
+                        <t t-esc="line.customerNote" />
+                        </div>
+                    </li>
+                    </td>
+                </tr>
+
+            </t>
+            </t>
+        </table>
+
+
+
+        <table style="width:270px;border-bottom:1pt dashed black;font-size:10pt" class='receipt-total'>
+            <colgroup>
+                <col width='24%'/>
+                <col width='1%'/>
+                <col width='46%'/>
+                <col width='1%'/>
+                <col width='24%'/>
+            </colgroup>
+            <tr>
+                <t t-if="props.receipt.total_discount">
+                    <td>Discount</td>
+                    <td>:</td>
+                    <td style="text-center:right;padding-right:6pt;font-weight:bold">
+                        <t t-esc="props.pos.env.utils.formatCurrency(props.receipt.total_discount)"/>
+                    </td>
+                    <td>:</td>
+                    <td style="text-align:right;font-weight:bold">الخصم</td>
+                </t>
+            </tr>
+            <tr>
+                <td style="padding-bottom:1pt; font-weight:bold;">Net to pay</td>
+                <td style="padding-bottom:2pt">:</td>
+                <td style="font-weight:bold;text-align:center;padding-bottom:1pt;padding-right:6pt">
+                    <t t-esc="props.pos.env.utils.formatCurrency(props.data.amount_total)"/>
+                </td>
+                <td style="padding-bottom:2pt">:</td>
+                <td style="text-align:right;padding-bottom:1pt; font-weight:bold;">الصافي المستحق</td>
+            </tr>
+
+        </table>
+
+        <table style="width:270px;border-bottom:1pt dashed black;font-size:10pt" class='receipt-total'>
+<t t-set="data2" t-value="34"/>
+            <t t-foreach="props.paymentlines" t-as="pay" t-key="data2">
+                <tr style="font-weight:bold;">
+                    <td style="vertical-align:bottom">
+                        <t t-esc='pay.name'/>
+                    </td>
+                    <td style="vertical-align:bottom">:</td>
+                    <td style="text-align:center;vertical-align:bottom;padding-right:6pt" >
+                        <span t-esc='props.pos.env.utils.formatCurrency(pay.amount)' />
+
+                    </td>
+                    <td style="vertical-align:bottom">:</td>
+                    <td style="text-align:right;vertical-align:bottom">المدفوع</td>
+                </tr>
+                <t t-set="data2" t-value="data2+1"/>
+            </t>
+            <tr>
+                <td style="padding-bottom:1pt;font-weight:bold">Change </td>
+                <td style="padding-bottom:2pt">:</td>
+                <td style="text-align:center;padding-bottom:1pt;padding-right:6pt" class="pos-right-align;font-weight:bold">
+                    <t t-esc="props.pos.env.utils.formatCurrency(props.receipt.change)"/>
+                </td>
+                <td style="padding-bottom:2pt">:</td>
+                <td style="padding-bottom:1pt;text-align:right;font-weight:bold">الباقي</td>
+            </tr>
+        </table>
+
+        <table>
+            <t t-if="props.note">
+                <tr>
+                    <td>Note:</td>
+                    <td class="pos-receipt-right-align">
+
+                        <t t-esc="props.note"/>
+
+                    </td>
+                </tr>
+            </t>
+            <t><br/>
+                <tr>
+                    <td class="pos-receipt-center-align" style="font-size:11px;width:270px;"><b>
+                        You’ve got good taste (literally). See you next time! Meanwhile, shop at: www.torba.co
+                    </b><br></br>
+                    </td>
+                </tr><tr style="height: 18px;"><td></td></tr>
+                <tr class="pos-receipt-left-align" style="font-size:10px;width:270px;">
+                    <td>
+                        <b>
+                            Food items and perishable goods are non-refundable.<br/>
+                            Please keep your bill for any exchange or return.<br/>
+                            Refunds will be processed within 7-10 working days.<br/>
+                            Returns and exchanges are accepted within 7 days of the bill date<br/>
+                        </b>
+                    </td>
+                </tr>
+                <tr class="pos-receipt-right-align" style="width:270px;font-size:10px;margin-top: 14px;">
+
+                    <td width="40%"/>
+                    <td ><b>
+
+                        لا يجوز استرداد ثمن المواد الغذائية والسلع القابلة للتلف.
+                        يرجى الاحتفاظ بفاتورتك لأي استبدال أو إرجاع.
+                        ستتم معالجة عمليات الاسترداد خلال 7-10 أيام عمل.
+                        يتم قبول الإرجاع والاستبدال خلال 7 أيام من تاريخ الفاتورة.<br/>
+                    </b>
+                    </td>
+                </tr>
+
+
+
+            </t>
+        </table>
+
+
+<t t-if="sheet1 == 1001">
+        <div class="pos-receipt-center-align" style="page-break-after:always;">
+            <br/>
+            <br/>
+            <b>*** Customer Copy ***</b>
+
+        </div>
+        </t>
+        <t t-if="sheet1 == 1002">
+        <div class="pos-receipt-center-align" style="page-break-after:always;">
+            <br/>
+            <br/>
+            <b>*** Business Copy ***</b>
+
+        </div>
+        </t>
+        <t t-if="sheet1 == 1003">
+        <div class="pos-receipt-center-align" style="page-break-after:always;">
+            <br/>
+            <br/>
+             <b>*** Cashier copy ***</b>
+
+        </div>
+        </t>
+    </div>
+    </t>
+
+
+]]></field>
+    </record>
+</odoo>

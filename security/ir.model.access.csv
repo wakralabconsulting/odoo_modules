@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pos_receipt_user,access.pos.receipt.user,model_pos_receipt,base.group_user,1,1,1,1
+access_plastic_free_user,access.plastic.free.user,model_plastic_free,base.group_user,1,1,1,1
+access_plastic_free_line_user,access.plastic.free.line.user,model_plastic_free_line,base.group_user,1,1,1,1
