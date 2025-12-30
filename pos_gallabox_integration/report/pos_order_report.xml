@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_pos_receipt_pdf" model="ir.actions.report">
+        <field name="name">WhatsApp PDF Receipt</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pos_gallabox_integration.report_receipt_template_view</field>
+        <field name="report_file">pos_gallabox_integration.report_receipt_template_view</field>
+        <field name="print_report_name">'Receipt - %s' % (object.name)</field>
+    </record>
+</odoo>

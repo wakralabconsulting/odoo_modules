@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_pos_receipt" model="ir.actions.report">
+        <field name="name">Gallabox POS Receipt</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pos_gallabox_integration.report_receipt_template_view</field>
+        <field name="report_file">pos_gallabox_integration.report_receipt_template_view</field>
+        <field name="print_report_name">'Receipt - %s' % (object.name)</field>
+        <field name="attachment_use">False</field>
+    </record>
+
+    <template id="report_receipt_template_view">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <t t-if="o.config_id.whatsapp_receipt_design_id.design_receipt">
+                        <t t-set="design_content" t-value="o.config_id.whatsapp_receipt_design_id.design_receipt"/>
+                        <t t-out="o.env['ir.qweb']._render('pos_gallabox_integration.report_receipt_template_view', {'doc': o, 'o': o}, template_attributes={'inline_template': design_content})"/>
+                    </t>
+                    <t t-else="">
+                        <div style="text-align:center;">No design selected in POS Settings.</div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+</odoo>

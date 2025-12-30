@@ -1,0 +1,28 @@
+<odoo>
+    <record id="pos_config_view_form_inherit_whatsapp" model="ir.ui.view">
+        <field name="name">pos.config.form.inherit.whatsapp</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_settings_container')]" position="before">
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="whatsapp_enabled"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="whatsapp_enabled" string="Enable WhatsApp Notifications"/>
+                            <div class="text-muted">
+                                Send automated receipts to customers via WhatsApp.
+                            </div>
+                            <div class="mt16" invisible="not whatsapp_enabled">
+                                <label for="whatsapp_receipt_design_id" string="Select WhatsApp Receipt Design"/>
+                                <field name="whatsapp_receipt_design_id" options="{'no_create': True}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
