@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_blog_post_list_inherit" model="ir.ui.view">
+        <field name="name">blog.post.login.inherit</field>
+        <field name="model">blog.post</field>
+        <field name="inherit_id" ref="website_blog.view_blog_post_list"/>
+        <field name="priority" eval="8"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="replace">
+                <tree js_class="website_pages_list" type="object"  multi_edit="1">
+                    <field name="active" column_invisible="True"/>
+                    <field name="name"/>
+                    <field name="website_url"/>
+                    <field name="author_id" optional="show"/>
+                    <field name="blog_id" optional="hide"/>
+                    <field name="create_uid" optional="hide"/>
+                    <field name="write_uid" optional="hide"/>
+                    <field name="write_date" optional="hide"/>
+                    <field name="is_seo_optimized"/>
+                    <field name="is_published"/>
+                    <field name="website_id" groups="website.group_multi_website"/>
+                </tree>
+            </xpath>
+        </field>
+    </record>
+
+     <record id="website_blog.blog_post_action_add" model="ir.actions.act_window">
+        <field name="name">New Blog Post</field>
+        <field name="res_model">blog.post</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="view_id" ref="website_blog.view_blog_post_form"/>
+    </record>
+
+</odoo>

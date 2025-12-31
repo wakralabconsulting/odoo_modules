@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+	<!-- Inherits `pos.config` form view to add the new fields for the configuration for custom receipt design -->
+	<record id="pos_config_view_form" model="ir.ui.view">
+		<field name="name">pos.config.view.form.inherit.custom.receipts.for.pos</field>
+		<field name="model">pos.config</field>
+		<field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//setting[@id='other_devices']" position="after">
+				<setting title="Customize the POS receipts" string="Custom Receipt" help="Use custom receipt designs">
+					<field name="is_custom_receipt"/>
+					<div class="content-group mt16">
+						<field name="receipt_design" invisible="not is_custom_receipt" required="True"/>
+					</div>
+					<div class="content-group mt16">
+						<field name="design_receipt" invisible="1"/>
+					</div>
+				</setting>
+			</xpath>
+		</field>
+	</record>
+
+
+
+	<record id="account_inherit_move_forinherit" model="ir.ui.view">
+		<field name="name">account.move.form</field>
+		<field name="model">account.move</field>
+		<field name="inherit_id" ref="account.view_move_form"/>
+		<field name="arch" type="xml">
+
+			<xpath expr="//field[@name='ref']" position="after">
+				<field name="custom_note" readonly="1"/>
+			</xpath>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_pos_tree_extended">
+		<field name="name">pos.order.tree.extend</field>
+		<field name="model">pos.order</field>
+		<field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+		<field name="arch" type="xml">
+			<tree position="attributes">
+				<attribute name="default_order">top_customer desc, name asc</attribute>
+			</tree>
+			<xpath expr="//field[@name='pos_reference']" position="after">
+				<field name="custom_note"/>
+				<field name="top_customer"/>
+				<field name="vendor_id"/>
+			</xpath>
+		</field>
+	</record>
+
+
+	<record id="pos_order_top_customer_inherit" model="ir.ui.view">
+        <field name="name">pos.order.list.select.inherit</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+	            <field name="custom_note"/>
+            </xpath>
+            <xpath expr="//filter[@name='invoiced']" position="after">
+                <filter string="Market Place Customer" name="top_customer" domain="[('top_customer', '=', True)]"/>
+                <filter string="Non Market Place Customer" name="top_customers" domain="[('top_customer', '!=', True)]"/>
+                <filter string="POS Only Sales" name="pos_sale" domain="['|', ('top_customer', '!=', True), ('partner_id', '=', False)]"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
